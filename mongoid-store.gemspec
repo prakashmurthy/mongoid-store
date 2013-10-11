@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors      = ["Ara Howard"]
   s.email        = ["ara.t.howard@gmail.com"]
   s.homepage     = "http://github.com/ahoward/mongoid-store"
-  s.summary      = "Rails Mongoid 3 Cache store."
   s.description  = "Rails Mongoid 3 Cache store."
+  s.summary      = "Rails Mongoid 3 Cache store"
   s.license      = "Same as Ruby's"
 
   s.add_dependency 'mongoid',       '~> 3.0'
