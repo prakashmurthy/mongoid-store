@@ -1,0 +1,27 @@
+= MongoidStore
+
+ActiveSupport Mongoid 3 Cache store, loosly  based on the 'mongoid_store' gem by Andre Meij
+
+== Supports
+
+* Mongoid 3+
+* Ruby 1.9.2+
+* ActiveSupport 3+
+
+== Installation and Usage
+
+  gem install mongoid-store
+
+  require 'mongoid-store'
+
+  store = ActiveSupport::Cache::MongoidStore.new
+  store.write('abc', 123)
+  pp store.read('abc')
+
+  pp store.read('def')
+  pp store.fetch('def'){ 456 }
+  pp store.read('def')
+
+Using MongoidStore with rails is as easy as:
+
+    config.cache_store = :mongoid_store
