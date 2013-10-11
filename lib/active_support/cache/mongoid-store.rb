@@ -1,3 +1,5 @@
+# encoding: utf-8
+#
 require 'mongoid'
 require 'active_support'
 
@@ -8,7 +10,7 @@ module ActiveSupport
 
       def initialize(options = {})
         @collection_name = options[:collection] || :rails_cache
-        options[:expires_in] ||= 24.hours
+        options[:expires_in] ||= 1.hour
         super(options)
       end
 
@@ -75,8 +77,7 @@ module ActiveSupport
           def Entry.data_for(entry)
             value = entry.instance_variable_get('@value')
             marshaled = value.nil? ? Marshal.dump(value) : value
-
-            Moped::BSON::Binary.new(:generic, marshaled.force_encoding('binary'))
+            Moped::BSON::Binary.new(:generic, marshaled)
           end
 
         else
@@ -84,8 +85,7 @@ module ActiveSupport
           def Entry.data_for(entry)
             v = entry.instance_variable_get('@v')
             marshaled = entry.send('compressed?') ? v : entry.send('compress', v)
-
-            Moped::BSON::Binary.new(:generic, marshaled.force_encoding('binary'))
+            Moped::BSON::Binary.new(:generic, marshaled)
           end
 
         end

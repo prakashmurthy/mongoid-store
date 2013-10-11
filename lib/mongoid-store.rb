@@ -1,4 +1,3 @@
-require 'active_support/cache/mongoid_store'
+require 'active_support/cache/mongoid-store'
 
-module MongoidStore
-end
+module MongoidStore; end

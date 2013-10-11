@@ -1,6 +1,8 @@
 = MongoidStore
 
-ActiveSupport Mongoid 3 Cache store, loosly  based on the 'mongoid_store' gem by Andre Meij
+  ActiveSupport Mongoid 3 Cache store, strongly  based on the 'mongoid_store' gem by Andre Meij
+
+
 
 == Supports
 

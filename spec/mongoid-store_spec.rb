@@ -1,7 +1,9 @@
+# encoding: utf-8
+#
 require 'helper'
 
 describe ActiveSupport::Cache::MongoidStore do
-  let(:collection)  { Mongoid.session(:default)[:cache] }
+  let(:collection)  { Mongoid.session(:default)[:rails_cache] }
   let(:store)       { ActiveSupport::Cache::MongoidStore.new }
 
   describe "#write" do
@@ -57,6 +59,24 @@ describe ActiveSupport::Cache::MongoidStore do
 
     it "works with symbol" do
       store.read(:foo).should == 'bar'
+    end
+  end
+
+  describe "encoding" do
+    before(:each) do
+      store.write('non_utf8', "\255")
+    end
+    let(:document) { collection.find(_id: 'non_utf8').first }
+
+    it "can write non-utf data" do
+      document.should_not be_nil
+      document['data'].should be_instance_of(Moped::BSON::Binary)
+    end
+
+    it "can read non-utf data" do
+      value = store.read('non_utf8')
+      value.should_not be_nil
+      value.should eq("\255")
     end
   end
 
