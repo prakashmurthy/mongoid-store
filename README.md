@@ -75,3 +75,10 @@ Using MongoidStore with rails is as easy as:
 
   Rails.cache.write(:key, :val)
 ```
+
+References
+----------
+
+http://www.slideshare.net/mongodb/mongodb-as-a-fast-and-queryable-cache
+http://stackoverflow.com/questions/10317732/why-use-redis-instead-of-mongodb-for-caching
+
