@@ -32,17 +32,17 @@ module ActiveSupport
       protected
 
       def write_entry(key, entry, options)
-        entry = Entry.new(_id: key, data: entry)
+        entry = Entry.new(key: key, data: entry)
         entry.upsert
       end
 
       def read_entry(key, options)
-        entry = Entry.find(key)
+        entry = Entry.find_by(key: key)
         entry
       end
 
       def delete_entry(key, options)
-        Entry.find(key).delete
+        Entry.find_by(key: key).delete
       end
     end
   end
