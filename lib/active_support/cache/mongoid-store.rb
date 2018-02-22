@@ -28,6 +28,10 @@ module ActiveSupport
         entry.upsert
       end
 
+      def read_entry(key, options)
+        entry = Entry.find(key)
+        entry
+      end
     end
   end
 end
