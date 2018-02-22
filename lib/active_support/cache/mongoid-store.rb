@@ -14,6 +14,14 @@ module ActiveSupport
         field :key,  type: String
         field :data, type: String
         field :expires_at, type: DateTime, default: ->{ 1.hour.from_now }
+
+        def expired?
+          expires_at < Time.now
+        end
+
+        def value
+          data
+        end
       end
 
       def initialize(options = {})
