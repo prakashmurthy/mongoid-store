@@ -38,7 +38,7 @@ module ActiveSupport
 
       def read_entry(key, options)
         entry = Entry.find_by(key: key)
-        entry
+        entry.value
       end
 
       def delete_entry(key, options)
