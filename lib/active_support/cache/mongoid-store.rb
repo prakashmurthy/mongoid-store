@@ -40,6 +40,10 @@ module ActiveSupport
         entry = Entry.find(key)
         entry
       end
+
+      def delete_entry(key, options)
+        Entry.find(key).delete
+      end
     end
   end
 end
