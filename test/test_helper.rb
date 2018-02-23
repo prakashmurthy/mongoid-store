@@ -4,8 +4,11 @@ gem 'minitest'
 require 'minitest/autorun'
 require "minitest/mock"
 require 'pry'
+require "active_support/cache"
+require 'mongoid-store'
 
 Mongoid.load!(File.expand_path("../mongoid.yml", __FILE__), :test)
+::ActiveSupport::Cache::MongoidStore::Entry.create_indexes
 
 # Copied from https://raw.githubusercontent.com/rails/rails/cfb1e4dfd8813d3d5c75a15a750b3c53eebdea65/activesupport/lib/active_support/testing/method_call_assertions.rb for test methods.
 
