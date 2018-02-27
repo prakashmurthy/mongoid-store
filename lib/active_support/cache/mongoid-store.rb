@@ -13,7 +13,6 @@ module ActiveSupport
         field :key,  type: String
         field :data, type: String
         field :expires_in, type: Float, default: 60.0
-        field :datatype, type: String, default: "String"
 
         index({ key: 1}, { unique: true, name: "key_index", background: true })
 
@@ -43,24 +42,19 @@ module ActiveSupport
 
       def write_entry(key, entry, options)
         value      = entry.instance_variable_get(:@value)
-        datatype   = value.class.to_s
         created_at = entry.instance_variable_get(:@created_at)
         expires_in = entry.instance_variable_get(:@expires_in)
         cache_entry = Entry.find_or_initialize_by(key: key)
 
         cache_entry.save!
-        cache_entry.update(data: value, created_at: created_at, expires_in: expires_in, datatype: datatype)
+        cache_entry.update(data: Marshal.dump(value), created_at: created_at, expires_in: expires_in )
       end
 
       def read_entry(key, options)
         entry = Entry.where(key: key).first
         return nil unless entry && !entry.expired?
 
-        value = entry.value
-        value = value.to_i if entry.datatype == "Fixnum"
-        value = false if entry.datatype == "FalseClass"
-        value = true  if entry.datatype == "TrueClass"
-        value = Hash(value) if entry.datatype == "Hash"
+        value = Marshal.load(entry.value)
 
         as_entry = ActiveSupport::Cache::Entry.new(value, expires_in: entry.expires_in)
         as_entry.instance_variable_set(:@created_at, entry.created_at.to_f)
