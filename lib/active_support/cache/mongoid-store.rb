@@ -30,12 +30,12 @@ module ActiveSupport
         super(options)
       end
 
-      def increment(key)
-
+      def increment(key, amount = 1, options = nil)
+        modify_value(key, amount, options)
       end
 
-      def decrement(key)
-
+      def decrement(key, amount = 1, options = nil)
+        modify_value(key, -amount, options)
       end
 
       protected
@@ -64,6 +64,15 @@ module ActiveSupport
 
       def delete_entry(key, options)
         Entry.find_by(key: key).delete
+      end
+
+      def modify_value(key, amount, options)
+        entry = Entry.where(key: key).first
+        number = Marshal.load(entry.value)
+        number = number.to_i if number == number.to_i.to_s
+        updated_value = number + amount
+        entry.update(data: Marshal.dump(updated_value))
+        updated_value
       end
     end
   end
