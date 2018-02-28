@@ -25,7 +25,7 @@ module ActiveSupport
         end
       end
 
-     def initialize(options = {})
+      def initialize(options = {})
         options[:expires_in] ||= 1.minute
         super(options)
       end
