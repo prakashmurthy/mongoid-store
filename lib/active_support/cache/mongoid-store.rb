@@ -45,6 +45,11 @@ module ActiveSupport
         created_at = entry.instance_variable_get(:@created_at)
         expires_in = entry.instance_variable_get(:@expires_in)
         cache_entry = Entry.find_or_initialize_by(key: key)
+        race_condition_ttl = options[:race_condition_ttl]
+
+        if race_condition_ttl && expires_in && expires_in > 0
+          expires_in += race_condition_ttl
+        end
 
         cache_entry.save!
         cache_entry.update(data: Marshal.dump(value), created_at: created_at, expires_in: expires_in )
@@ -52,6 +57,12 @@ module ActiveSupport
 
       def read_entry(key, options)
         entry = Entry.where(key: key).first
+        return nil unless entry
+
+        if race_condition_ttl = options[:race_condition_ttl].to_i
+          entry.update(expires_in: entry.expires_in + race_condition_ttl)
+        end
+
         return nil unless entry && !entry.expired?
 
         value = Marshal.load(entry.value)
