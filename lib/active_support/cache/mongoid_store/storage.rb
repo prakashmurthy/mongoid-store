@@ -1,7 +1,7 @@
 module ActiveSupport
   module Cache
     class MongoidStore
-      class Storage
+      class Storage < Entry
         include Mongoid::Document
         include Mongoid::Timestamps
 
@@ -17,6 +17,14 @@ module ActiveSupport
 
         def value
           data
+        end
+
+        def compress(value)
+          Base64.encode64(Marshal.dump(value))
+        end
+
+        def uncompress(value)
+          Marshal.load(Base64.encode64(value))
         end
       end
     end
