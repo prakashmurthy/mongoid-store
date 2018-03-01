@@ -6,24 +6,8 @@ require 'active_support'
 module ActiveSupport
   module Cache
     class MongoidStore < Store
-      class Entry
-        include Mongoid::Document
-        include Mongoid::Timestamps
 
-        field :key,  type: String
-        field :data, type: String
-        field :expires_in, type: Float, default: 60.0
-
-        index({ key: 1}, { unique: true, name: "key_index", background: true })
-
-        def expired?
-          created_at.to_f + expires_in < Time.now.to_f
-        end
-
-        def value
-          data
-        end
-      end
+      require_relative 'mongoid_store/storage.rb'
 
       def initialize(options = {})
         options[:expires_in] ||= 1.minute
@@ -44,7 +28,7 @@ module ActiveSupport
         value      = entry.instance_variable_get(:@value)
         created_at = entry.instance_variable_get(:@created_at)
         expires_in = entry.instance_variable_get(:@expires_in)
-        cache_entry = Entry.find_or_initialize_by(key: key)
+        cache_entry = Storage.find_or_initialize_by(key: key)
         race_condition_ttl = options[:race_condition_ttl]
         compressed = entry.instance_variable_get(:@compressed)
 
@@ -62,7 +46,7 @@ module ActiveSupport
       end
 
       def read_entry(key, options)
-        entry = Entry.where(key: key).first
+        entry = Storage.where(key: key).first
         return nil unless entry
 
         if race_condition_ttl = options[:race_condition_ttl].to_i
@@ -80,11 +64,11 @@ module ActiveSupport
       end
 
       def delete_entry(key, options)
-        Entry.find_by(key: key).delete
+        Storage.find_by(key: key).delete
       end
 
       def modify_value(key, amount, options)
-        entry = Entry.where(key: key).first
+        entry = Storage.where(key: key).first
         number = Marshal.load(entry.value)
         number = number.to_i if number == number.to_i.to_s
         updated_value = number + amount
