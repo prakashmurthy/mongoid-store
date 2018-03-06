@@ -8,6 +8,7 @@ module ActiveSupport
         field :key,  type: String
         field :data, type: String
         field :expires_in, type: Float, default: 60.0
+        field :expires_at, type: Time, default: ->{ Time.now + expires_in }
 
         index({ key: 1}, { unique: true, name: "key_index", background: true })
 
