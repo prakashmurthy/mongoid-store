@@ -1,6 +1,11 @@
 # encoding: utf-8
-#
-require 'mongoid'
+begin
+  require "mongoid"
+rescue LoadError => e
+  $stderr.puts "You don't have mongoid installed in your application. Please add it to your Gemfile and run bundle install"
+  raise e
+end
+
 require 'active_support'
 
 module ActiveSupport
