@@ -31,11 +31,9 @@ module ActiveSupport
 
       def write_entry(key, entry, options)
         value      = entry.instance_variable_get(:@value)
-        created_at = entry.instance_variable_get(:@created_at)
+        created_at = Time.at(entry.instance_variable_get(:@created_at))
         expires_in = entry.instance_variable_get(:@expires_in)
         expires_at = Time.now + expires_in if expires_in
-
-        cache_entry = Storage.find_or_initialize_by(key: key)
         race_condition_ttl = options[:race_condition_ttl]
         compressed = entry.instance_variable_get(:@compressed)
 
@@ -43,16 +41,24 @@ module ActiveSupport
           expires_in += race_condition_ttl
         end
 
-        cache_entry.save!
-
         if compressed
           value = Marshal.load(Zlib::Inflate.inflate(value))
         end
 
-        cache_entry.update(data: Marshal.dump(value),
-                           created_at: created_at,
-                           expires_in: expires_in,
-                           expires_at: expires_at)
+        Storage.find_one_and_update(
+          {
+            key: key,
+            data: Marshal.dump(value),
+            created_at: created_at,
+            expires_in: expires_in,
+            expires_at: expires_at
+          },
+          {
+            new: true,
+            upsert: true,
+            return_document: :after
+          }
+        )
       end
 
       def read_entry(key, options)
